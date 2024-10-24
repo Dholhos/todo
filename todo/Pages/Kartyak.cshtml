@@ -1,0 +1,59 @@
+﻿@page
+@model KartyaModel
+@{
+    ViewData["Title"] = "Kártyák";
+}
+
+<h1>Kártyák</h1>
+
+<!-- Új kártya hozzáadása -->
+<form method="post" asp-page-handler="Create">
+    <input type="text" name="newKartyaNev" placeholder="Új kártya neve" required />
+    <button type="submit">Kártya hozzáadása</button>
+</form>
+
+<!-- Kártyák megjelenítése -->
+<div class="cards-container">
+    @foreach (var kartya in Model.Kartyak)
+    {
+        <div class="card">
+            <h2>@kartya.nev</h2>
+
+            <!-- Jegyzetek listázása -->
+            <div class="notes">
+                @if (kartya.Jegyzetek != null && kartya.Jegyzetek.Any())
+                {
+                    @foreach (var jegyzet in kartya.Jegyzetek)
+                    {
+                        <div class="note">
+                            <p>@jegyzet.tartalom</p>
+                            <span class="date">@jegyzet.letrehozasIdeje.ToString("yyyy-MM-dd")</span>
+
+                            <!-- Jegyzet törlése gomb -->
+                            <form method="post" asp-page-handler="DeleteNote" asp-route-jegyzetId="@jegyzet.Id" class="inline-form">
+                                <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
+                            </form>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Nincsenek jegyzetek</p>
+                }
+            </div>
+
+            <!-- Új jegyzet hozzáadása -->
+            <form method="post" asp-page-handler="AddNote" asp-route-kartyaId="@kartya.id">
+                <input type="text" name="newNote" placeholder="Új jegyzet" required />
+                <button type="submit">Jegyzet hozzáadása</button>
+            </form>
+
+            <!-- Kártya törlése gomb -->
+            <div class="card-delete">
+                <form method="post" asp-page-handler="DeleteKartya" asp-route-id="@kartya.id">
+                    <button type="submit" class="btn btn-danger">Kártya törlése</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
